@@ -1,8 +1,13 @@
-import { Dialog, DialogContent, DialogTrigger } from '@radix-ui/react-dialog'
+import type { Article } from '@/types/article.ts';
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
-import type { Article } from '@/types/article.ts'
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog.tsx'
+import { useState } from 'react'
 
 
 interface ArticleCardProps {
@@ -12,6 +17,8 @@ interface ArticleCardProps {
 
 
 export function ArticleCard({ article }: ArticleCardProps) {
+  const images = article.preview_images.split(',')
+  const [currentIndex, setCurrentIndex] = useState(0)
   return (
     <Card className="overflow-hidden rounded-2xl transition-shadow hover:shadow-xl">
       {/* 图片 */}
@@ -19,15 +26,70 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <DialogTrigger asChild>
           <div className="relative h-56 cursor-zoom-in overflow-hidden">
             <img
-              src={article.preview_image}
+              src={images[0]}
               alt={article.title}
               className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
             />
           </div>
         </DialogTrigger>
 
-        <DialogContent className="max-w-4xl p-0">
-          <img src={article.preview_image} alt={article.title} className="w-full rounded-lg" />
+        <DialogContent className="max-w-7xl p-4">
+          <div className="relative">
+            <img
+              src={images[currentIndex]}
+              alt={`${article.title}-${currentIndex}`}
+              className="max-w-7xl rounded-lg object-contain"
+            />
+
+            {/* 左右切换按钮 */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() =>
+                    setCurrentIndex((prev) =>
+                      prev === 0 ? images.length - 1 : prev - 1
+                    )
+                  }
+                  className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-2 text-white"
+                >
+                  ‹
+                </button>
+
+                <button
+                  onClick={() =>
+                    setCurrentIndex((prev) =>
+                      prev === images.length - 1 ? 0 : prev + 1
+                    )
+                  }
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 px-3 py-2 text-white"
+                >
+                  ›
+                </button>
+              </>
+            )}
+          </div>
+
+          {images.length > 1 && (
+            <div className="mt-4 flex gap-2 overflow-x-auto">
+              {images.map((img, index) => (
+                <button
+                  key={img}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded border-2 ${
+                    currentIndex === index
+                      ? "border-primary"
+                      : "border-transparent"
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`preview-${index}`}
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

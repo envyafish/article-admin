@@ -5,7 +5,7 @@ export interface Article {
   section: string
   publish_date: string
   magnet: string
-  preview_image: string
+  preview_images: string
 }
 
 

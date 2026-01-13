@@ -1,6 +1,5 @@
 import type { Article, ArticleFilter, Category } from '@/types/article.ts'
-import type { ApiResponse } from '@/types/response.ts'
-import { getDateRange } from '@/utils'
+import { getDateRange } from '@/lib/utils.ts'
 import { request } from './request'
 
 export interface ArticleListResult {
@@ -13,7 +12,8 @@ export function getArticles(params: {
   pageSize: number
   filter: ArticleFilter
 }) {
-  return request<ApiResponse<ArticleListResult>>('/articles/search', {
+  return request<ArticleListResult>({
+    url: '/articles/search',
     method: 'post',
     data: {
       page: params.page,
@@ -28,5 +28,5 @@ export function getArticles(params: {
 }
 
 export function getCategories() {
-  return request<ApiResponse<[Category]>>('/articles/categories')
+  return request<[Category]>({ url: '/articles/categories' })
 }
